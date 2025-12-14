@@ -23,25 +23,22 @@ class EmailServiceTest {
 
     @Test
     void sendWelcomeEmail_WhenEmailDisabled_ShouldNotSendEmail() {
-        // Устанавливаем email отключенным
         emailService.setEmailEnabled(false);
         emailService.setMockEmail(false);
 
         emailService.sendWelcomeEmail("test@example.com");
 
-        // Проверяем, что mailSender не вызывался
         verify(mailSender, never()).send(any(SimpleMailMessage.class));
     }
 
     @Test
     void sendWelcomeEmail_WhenMockEmailTrue_ShouldNotSendRealEmail() {
-        // Устанавливаем mock режим
         emailService.setEmailEnabled(true);
         emailService.setMockEmail(true);
 
         emailService.sendWelcomeEmail("test@example.com");
 
-        // Проверяем, что mailSender не вызывался (только логирование)
+        //Проверяем, что mailSender не вызывался (только логирование).
         verify(mailSender, never()).send(any(SimpleMailMessage.class));
     }
 
@@ -57,12 +54,9 @@ class EmailServiceTest {
 
     @Test
     void sendWelcomeEmail_WhenRealEmail_ShouldLogRealEmail() {
-        // Этот тест проверяет только логику без реальной отправки
         emailService.setEmailEnabled(true);
         emailService.setMockEmail(false);
 
-        // Здесь мы просто проверяем, что метод выполняется без ошибок
-        // Реальная отправка требует настройки SMTP, что не нужно в тестах
         assertDoesNotThrow(() -> emailService.sendWelcomeEmail("test@example.com"));
     }
 }

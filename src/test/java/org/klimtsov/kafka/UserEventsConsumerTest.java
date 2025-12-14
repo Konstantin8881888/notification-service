@@ -21,55 +21,42 @@ class UserEventsConsumerTest {
 
     @Test
     void handleUserEvent_WhenOperationIsCreate_ShouldCallSendWelcomeEmail() {
-        // Подготовка
         UserEvent event = new UserEvent("test@example.com", "CREATE");
 
-        // Действие
         userEventsConsumer.handleUserEvent(event);
 
-        // Проверка
         verify(emailService, times(1)).sendWelcomeEmail("test@example.com");
     }
 
     @Test
     void handleUserEvent_WhenOperationIsDelete_ShouldCallSendDeletionEmail() {
-        // Подготовка
         UserEvent event = new UserEvent("test@example.com", "DELETE");
 
-        // Действие
         userEventsConsumer.handleUserEvent(event);
 
-        // Проверка
         verify(emailService, times(1)).sendDeletionEmail("test@example.com");
     }
 
     @Test
     void handleUserEvent_WhenOperationIsUnknown_ShouldNotCallEmailService() {
-        // Подготовка
         UserEvent event = new UserEvent("test@example.com", "UNKNOWN");
 
-        // Действие
         userEventsConsumer.handleUserEvent(event);
 
-        // Проверка - не должно быть вызовов email сервиса
         verify(emailService, never()).sendWelcomeEmail(anyString());
         verify(emailService, never()).sendDeletionEmail(anyString());
     }
 
     @Test
     void handleUserEvent_WhenEmailServiceThrowsException_ShouldLogError() {
-        // Подготовка
         UserEvent event = new UserEvent("test@example.com", "CREATE");
 
-        // Настраиваем mock, чтобы он бросал исключение
         doThrow(new RuntimeException("Ошибка отправки"))
                 .when(emailService)
                 .sendWelcomeEmail(anyString());
 
-        // Действие - должно обработаться без падения приложения
         userEventsConsumer.handleUserEvent(event);
 
-        // Проверка - метод был вызван
         verify(emailService, times(1)).sendWelcomeEmail("test@example.com");
     }
 }
