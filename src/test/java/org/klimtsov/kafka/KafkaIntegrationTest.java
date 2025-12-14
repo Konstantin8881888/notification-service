@@ -28,7 +28,7 @@ import static org.mockito.Mockito.verify;
 class KafkaIntegrationTest {
 
     @Autowired
-    private KafkaTemplate<String, Object> testKafkaTemplate; // Используйте общий тип Object
+    private KafkaTemplate<String, Object> testKafkaTemplate;
 
     @MockitoSpyBean
     private EmailService emailService;
