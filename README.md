@@ -87,7 +87,7 @@
 
 **Запрос:**
 
-POST /api/notifications/welcome?email=user@example.com
+    POST /api/notifications/welcome?email=user@example.com
 
 Host: localhost:8081
 
@@ -101,7 +101,7 @@ Host: localhost:8081
 
 **Запрос:**
 
-POST /api/notifications/deletion?email=user@example.com
+    POST /api/notifications/deletion?email=user@example.com
 
 Host: localhost:8081
 
@@ -115,7 +115,7 @@ Host: localhost:8081
 
 **Запрос:**
 
-GET /api/notifications/health
+    GET /api/notifications/health
 
 Host: localhost:8081
 
