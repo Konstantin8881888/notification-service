@@ -88,8 +88,7 @@
 **Запрос:**
 
     POST /api/notifications/welcome?email=user@example.com
-
-Host: localhost:8081
+    Host: localhost:8081
 
 **Пример ответа (200 OK):**
 
@@ -102,8 +101,7 @@ Host: localhost:8081
 **Запрос:**
 
     POST /api/notifications/deletion?email=user@example.com
-
-Host: localhost:8081
+    Host: localhost:8081
 
 **Пример ответа (200 OK):**
 
@@ -116,8 +114,7 @@ Host: localhost:8081
 **Запрос:**
 
     GET /api/notifications/health
-
-Host: localhost:8081
+    Host: localhost:8081
 
 **Пример ответа (200 OK):**
 
@@ -148,5 +145,21 @@ Host: localhost:8081
     - Включите двухфакторную аутентификацию в Google аккаунте
     - Перейдите: https://security.google.com/settings/security/apppasswords
     - Создайте пароль для "Почта"
+
+### Альтернативные SMTP серверы:
+**Yandex (нужен пароль приложения):**
+
+    SMTP_HOST=smtp.yandex.ru
+    SMTP_PORT=587
+
+**Mail.ru:**
+
+    SMTP_HOST=smtp.mail.ru
+    SMTP_PORT=465
+
+**Outlook/Office365:**
+
+    SMTP_HOST=smtp.office365.com
+    SMTP_PORT=587
 
 ---
