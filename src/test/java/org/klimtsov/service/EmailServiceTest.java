@@ -7,8 +7,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.test.util.ReflectionTestUtils;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -23,8 +23,9 @@ class EmailServiceTest {
 
     @Test
     void sendWelcomeEmail_WhenEmailDisabled_ShouldNotSendEmail() {
-        emailService.setEmailEnabled(false);
-        emailService.setMockEmail(false);
+        //Устанавливаем email отключенным через ReflectionTestUtils.
+        ReflectionTestUtils.setField(emailService, "emailEnabled", false);
+        ReflectionTestUtils.setField(emailService, "mockEmail", false);
 
         emailService.sendWelcomeEmail("test@example.com");
 
@@ -33,19 +34,19 @@ class EmailServiceTest {
 
     @Test
     void sendWelcomeEmail_WhenMockEmailTrue_ShouldNotSendRealEmail() {
-        emailService.setEmailEnabled(true);
-        emailService.setMockEmail(true);
+        //Устанавливаем mock режим через ReflectionTestUtils.
+        ReflectionTestUtils.setField(emailService, "emailEnabled", true);
+        ReflectionTestUtils.setField(emailService, "mockEmail", true);
 
         emailService.sendWelcomeEmail("test@example.com");
 
-        //Проверяем, что mailSender не вызывался (только логирование).
         verify(mailSender, never()).send(any(SimpleMailMessage.class));
     }
 
     @Test
     void sendDeletionEmail_WhenMockEmailTrue_ShouldNotSendRealEmail() {
-        emailService.setEmailEnabled(true);
-        emailService.setMockEmail(true);
+        ReflectionTestUtils.setField(emailService, "emailEnabled", true);
+        ReflectionTestUtils.setField(emailService, "mockEmail", true);
 
         emailService.sendDeletionEmail("test@example.com");
 
@@ -53,10 +54,15 @@ class EmailServiceTest {
     }
 
     @Test
-    void sendWelcomeEmail_WhenRealEmail_ShouldLogRealEmail() {
-        emailService.setEmailEnabled(true);
-        emailService.setMockEmail(false);
+    void sendWelcomeEmail_WhenRealEmail_ShouldCallMailSender() {
+        //Для реальной отправки.
+        ReflectionTestUtils.setField(emailService, "emailEnabled", true);
+        ReflectionTestUtils.setField(emailService, "mockEmail", false);
+        //Устанавливаем fromEmail, чтобы не было null.
+        ReflectionTestUtils.setField(emailService, "fromEmail", "test@example.com");
 
-        assertDoesNotThrow(() -> emailService.sendWelcomeEmail("test@example.com"));
+        emailService.sendWelcomeEmail("recipient@example.com");
+
+        verify(mailSender, times(1)).send(any(SimpleMailMessage.class));
     }
 }
