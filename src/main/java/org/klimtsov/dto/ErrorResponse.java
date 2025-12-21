@@ -9,8 +9,10 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class NotificationResponse {
+public class ErrorResponse {
     private String message;
-    private String email;
-    private String notificationType;
+    private String timestamp;
+    private int status;
+    private String error;
+    private String path;
 }
