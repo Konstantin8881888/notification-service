@@ -7,9 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.klimtsov.config.ControllerTestConfig;
 
 import static org.hamcrest.Matchers.containsString;
@@ -24,8 +22,16 @@ class GlobalExceptionHandlerTest {
     private MockMvc mockMvc;
 
     @Test
-    void whenInvalidIntegerParam_ShouldReturnBadRequest() throws Exception {
-        mockMvc.perform(get("/api/test/int")
+    void whenMissingServletRequestParameter_ShouldReturnBadRequest() throws Exception {
+        mockMvc.perform(get("/api/test/missing-param"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").exists())
+                .andExpect(jsonPath("$.message").value(containsString("Отсутствует обязательный параметр")));
+    }
+
+    @Test
+    void whenMethodArgumentTypeMismatch_ShouldReturnBadRequest() throws Exception {
+        mockMvc.perform(get("/api/test/type-mismatch")
                         .param("number", "not-a-number"))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").exists())
@@ -33,30 +39,32 @@ class GlobalExceptionHandlerTest {
     }
 
     @Test
-    void whenInvalidBooleanParam_ShouldReturnBadRequest() throws Exception {
-        mockMvc.perform(get("/api/test/bool")
-                        .param("flag", "not-a-boolean"))
-                .andExpect(status().isBadRequest())
+    void whenGenericException_ShouldReturnInternalServerError() throws Exception {
+        mockMvc.perform(get("/api/test/exception"))
+                .andExpect(status().isInternalServerError())
                 .andExpect(jsonPath("$.message").exists())
-                .andExpect(jsonPath("$.message").value(containsString("Неверный тип параметра")));
+                .andExpect(jsonPath("$.message").value(containsString("Внутренняя ошибка сервера")));
     }
 
-    //Тестовый контроллер.
     @RestController
     static class TestController {
 
-        @GetMapping("/api/test/int")
-        public String testInt(@RequestParam Integer number) {
+        @GetMapping("/api/test/missing-param")
+        public String testMissingParam(@RequestParam String required) {
+            return "OK";
+        }
+
+        @GetMapping("/api/test/type-mismatch")
+        public String testTypeMismatch(@RequestParam Integer number) {
             return "Number: " + number;
         }
 
-        @GetMapping("/api/test/bool")
-        public String testBool(@RequestParam Boolean flag) {
-            return "Flag: " + flag;
+        @GetMapping("/api/test/exception")
+        public String testException() {
+            throw new RuntimeException("Test exception");
         }
     }
 
-    //Конфигурация для регистрации тестового контроллера.
     @Configuration
     @Import(ControllerTestConfig.class)
     static class TestControllerConfig {
