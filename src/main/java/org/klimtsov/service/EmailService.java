@@ -52,7 +52,7 @@ public class EmailService {
             return;
         }
 
-        //РЕАЛЬНАЯ отправка email.
+        //Реальная отправка email.
         try {
             SimpleMailMessage message = new SimpleMailMessage();
             message.setFrom(fromEmail);

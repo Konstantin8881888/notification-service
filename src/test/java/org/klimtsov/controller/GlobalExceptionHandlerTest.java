@@ -16,7 +16,6 @@ import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-//Отдельный тестовый класс для MethodArgumentTypeMismatchException чтобы избежать конфликтов с основным тестовым классом.
 @WebMvcTest
 @Import({ControllerTestConfig.class, GlobalExceptionHandlerTest.TestControllerConfig.class})
 class GlobalExceptionHandlerTest {
@@ -29,8 +28,8 @@ class GlobalExceptionHandlerTest {
         mockMvc.perform(get("/api/test/int")
                         .param("number", "not-a-number"))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.number").exists())
-                .andExpect(jsonPath("$.number").value(containsString("Неверный тип параметра")));
+                .andExpect(jsonPath("$.message").exists())
+                .andExpect(jsonPath("$.message").value(containsString("Неверный тип параметра")));
     }
 
     @Test
@@ -38,8 +37,8 @@ class GlobalExceptionHandlerTest {
         mockMvc.perform(get("/api/test/bool")
                         .param("flag", "not-a-boolean"))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.flag").exists())
-                .andExpect(jsonPath("$.flag").value(containsString("Неверный тип параметра")));
+                .andExpect(jsonPath("$.message").exists())
+                .andExpect(jsonPath("$.message").value(containsString("Неверный тип параметра")));
     }
 
     //Тестовый контроллер.

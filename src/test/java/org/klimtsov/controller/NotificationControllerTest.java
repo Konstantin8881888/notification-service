@@ -83,13 +83,15 @@ class NotificationControllerTest {
     @Test
     void sendWelcomeEmail_WithoutEmailParam_ShouldReturnBadRequest() throws Exception {
         mockMvc.perform(post("/api/notifications/welcome"))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").exists());
     }
 
     @Test
     void sendDeletionEmail_WithoutEmailParam_ShouldReturnBadRequest() throws Exception {
         mockMvc.perform(post("/api/notifications/deletion"))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").exists());
     }
 
     @Test
@@ -109,7 +111,7 @@ class NotificationControllerTest {
         mockMvc.perform(post("/api/notifications/welcome")
                         .param("email", "invalid-email"))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.['email']").exists());
+                .andExpect(jsonPath("$.message").exists());
     }
 
     @Test
@@ -117,13 +119,14 @@ class NotificationControllerTest {
         mockMvc.perform(post("/api/notifications/welcome")
                         .param("email", ""))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.['email']").exists());
+                .andExpect(jsonPath("$.message").exists());
     }
 
     @Test
     void sendWelcomeEmail_WithNullEmail_ShouldReturnBadRequest() throws Exception {
         mockMvc.perform(post("/api/notifications/welcome"))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").exists());
     }
 
     @Test
@@ -131,6 +134,6 @@ class NotificationControllerTest {
         mockMvc.perform(post("/api/notifications/deletion")
                         .param("email", "not-an-email"))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.['email']").exists());
+                .andExpect(jsonPath("$.message").exists());
     }
 }
