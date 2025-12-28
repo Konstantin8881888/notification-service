@@ -14,7 +14,7 @@ public class OpenApiConfig {
     @Bean
     public OpenAPI notificationServiceOpenAPI() {
         Server localServer = new Server()
-                .url("http://localhost:8081")
+                .url("http://localhost:8082")
                 .description("Локальный сервер разработки");
 
         Server dockerServer = new Server()
