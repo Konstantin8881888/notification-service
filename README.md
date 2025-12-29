@@ -2,6 +2,18 @@
 
 Приложение представляет собой микросервис, который получает события о действиях с пользователями из Kafka и отправляет соответствующие email-уведомления. Также предоставляет REST API для ручной отправки уведомлений.
 
+### Архитектура Spring Cloud
+
+Сервис интегрирован в Spring Cloud со следующими особенностями:
+- **Service Discovery**: Регистрация в Eureka Server (порт 8761)
+- **External Configuration**: Получение настроек из Config Server (порт 8888)
+- **API Gateway**: Доступ через единую точку входа (порт 8080)
+- **Circuit Breaker**: Защита через Resilience4j в Gateway
+
+**Порты:**
+- Сервис напрямую: `http://localhost:8082`
+- Через Gateway: `http://localhost:8080/api/notifications/*`
+
 ### Особенности:
 
 - Получение событий из Apache Kafka о создании и удалении пользователей
@@ -29,6 +41,8 @@
 - SpringDoc OpenAPI - для автоматической генерации документации API
 - Spring Validation - для валидации входных данных
 - Spring Test Framework - для модульного и интеграционного тестирования
+- Spring Cloud Config Client - для получения конфигурации из центрального сервера
+- Spring Cloud Netflix Eureka Client - для регистрации в сервисе обнаружения
 
 ---
 
@@ -112,8 +126,9 @@
 Сервис предоставляет автоматически сгенерированную документацию API через Swagger UI.
 
 ### Доступные URL:
-- **Swagger UI**: `http://localhost:8081/swagger-ui.html`
-- **OpenAPI спецификация**: `http://localhost:8081/api-docs`
+- **Через Gateway**: http://localhost:8080/swagger-ui.html
+- **Прямой доступ**: http://localhost:8082/swagger-ui.html
+- **OpenAPI спецификация**: http://localhost:8082/api-docs
 
 ### Особенности документации:
 - Полное описание всех endpoints с примерами запросов и ответов
@@ -136,7 +151,10 @@
 **Запрос:**
 
     POST /api/notifications/welcome?email=user@example.com
-    Host: localhost:8081
+
+    Host: localhost:8082  (прямой доступ)
+    Или через Gateway: http://localhost:8080/api/notifications
+
     Content-Type: application/json
 
 **Пример ответа (200 OK):**
@@ -147,13 +165,13 @@
         "notificationType": "WELCOME",
         "_links": {
         "self": {
-        "href": "http://localhost:8081/api/notifications/welcome?email=user%40example.com"
+        "href": "http://localhost:8082/api/notifications/welcome?email=user%40example.com"
             },
         "send-deletion": {
-        "href": "http://localhost:8081/api/notifications/deletion?email=user%40example.com"
+        "href": "http://localhost:8082/api/notifications/deletion?email=user%40example.com"
             },
         "health": {
-        "href": "http://localhost:8081/api/notifications/health"
+        "href": "http://localhost:8082/api/notifications/health"
             }
         }
     }
@@ -165,7 +183,10 @@
 **Запрос:**
 
     POST /api/notifications/deletion?email=user@example.com
-    Host: localhost:8081
+
+    Host: localhost:8082  (прямой доступ)
+    Или через Gateway: http://localhost:8080/api/notifications
+
     Content-Type: application/json
 
 **Пример ответа (200 OK):**
@@ -176,13 +197,13 @@
         "notificationType": "DELETION",
         "_links": {
         "self": {
-        "href": "http://localhost:8081/api/notifications/deletion?email=user%40example.com"
+        "href": "http://localhost:8082/api/notifications/deletion?email=user%40example.com"
             },
         "send-welcome": {
-        "href": "http://localhost:8081/api/notifications/welcome?email=user%40example.com"
+        "href": "http://localhost:8082/api/notifications/welcome?email=user%40example.com"
             },
         "health": {
-        "href": "http://localhost:8081/api/notifications/health"
+        "href": "http://localhost:8082/api/notifications/health"
             }
         }
     }
@@ -194,7 +215,10 @@
 **Запрос:**
 
     GET /api/notifications/health
-    Host: localhost:8081
+
+    Host: localhost:8082  (прямой доступ)
+    Или через Gateway: http://localhost:8080/api/notifications
+
     Content-Type: application/json
 
 **Пример ответа (200 OK):**
@@ -205,14 +229,14 @@
         "serviceName": "notification-service",
         "_links": {
         "self": {
-        "href": "http://localhost:8081/api/notifications/health"
+        "href": "http://localhost:8082/api/notifications/health"
             },
         "send-welcome": {
-        "href": "http://localhost:8081/api/notifications/welcome?email=",
+        "href": "http://localhost:8082/api/notifications/welcome?email=",
         "title": "Send welcome email"
             },
         "send-deletion": {
-        "href": "http://localhost:8081/api/notifications/deletion?email=",
+        "href": "http://localhost:8082/api/notifications/deletion?email=",
         "title": "Send deletion email"
             }
         }
@@ -222,9 +246,8 @@
 
 ## Конфигурация
 
-### Основные настройки (application.properties):
-- `server.port=8081` - порт приложения
-- `logging.level.org.klimtsov.notification=DEBUG` - уровень логирования сервиса
+### Основные настройки:
+Все настройки вынесены в централизованный Config Server. Локально остаётся только `bootstrap.yml`
 
 #### Настройки Kafka:
 - `spring.kafka.bootstrap-servers=localhost:9092` - адрес Kafka
@@ -243,7 +266,7 @@
 - `spring.mail.password=${SMTP_PASSWORD:}` - пароль SMTP-сервера (только для реальной отправки).
 
 ### Режим работы с email:
-Используется, в зависимости от настроек в application.properties (см. выше в основных настройка), мок-отправка email - все письма логируются в консоль вместо реальной отправки или реальная отправка на электронную почту пользователя.
+Используется, в зависимости от настроек в application.yml (см. выше в основных настройка), мок-отправка email - все письма логируются в консоль вместо реальной отправки или реальная отправка на электронную почту пользователя.
 
 ### Отправка на реальный email:
 - **SMTP сервер** - используется для отправки писем

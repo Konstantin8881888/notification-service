@@ -1,0 +1,20 @@
+#Fallback на случай недоступности Config Server.
+spring:
+  cloud:
+    config:
+      enabled: true
+  kafka:
+    bootstrap-servers: localhost:9092
+
+eureka:
+  client:
+    enabled: true
+
+#Fallback-настройки.
+server:
+  port: 8082
+
+notification:
+  email:
+    enabled: true
+    mock: true

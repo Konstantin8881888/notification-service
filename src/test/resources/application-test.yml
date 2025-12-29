@@ -1,0 +1,31 @@
+server:
+  port: 8081
+
+spring:
+  #Отключаем Config для тестов.
+  cloud:
+    config:
+      enabled: fals
+  #Kafka для тестов.
+  kafka:
+    bootstrap-servers: ${spring.embedded.kafka.brokers:localhost:9092}
+    consumer:
+      group-id: notification-group
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring:
+          json:
+            trusted:
+              packages: "*"
+
+#Email настройки для тестов.
+notification:
+  email:
+    enabled: true
+    mock: true
+
+#Отключаем Eureka для тестов.
+eureka:
+  client:
+    enabled: false
