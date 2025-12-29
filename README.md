@@ -59,6 +59,18 @@
 - При операции `CREATE` - отправляется приветственное письмо
 - При операции `DELETE` - отправляется письмо об удалении аккаунта
 
+### Интеграция с Spring Cloud:
+
+- **Config Server**: Все настройки хранятся централизованно в `config-server`
+- **Eureka Server**: Автоматическая регистрация и обнаружение сервисов
+- **API Gateway**: Единая точка входа для всех запросов к API
+- **Circuit Breaker**: Автоматическое переключение на fallback при недоступности сервиса
+
+### Файлы конфигурации:
+- `bootstrap.yml` - минимальная конфигурация для подключения к Config Server и Eureka
+- `application.yml` - конфигурации fallback на случай недоступности сервера.
+- Тестовые настройки остаются в `src/test/resources/application-test.yml`
+
 ---
 
 ## Тексты email-уведомлений
@@ -249,21 +261,10 @@
 ### Основные настройки:
 Все настройки вынесены в централизованный Config Server. Локально остаётся только `bootstrap.yml`
 
-#### Настройки Kafka:
-- `spring.kafka.bootstrap-servers=localhost:9092` - адрес Kafka
-- `spring.kafka.consumer.group-id=notification-group` - группа потребителей
-- `spring.kafka.consumer.properties.allow.auto.create.topics=false` - запрет автоматического создания топиков
-
-#### Настройки KRaft (Kafka без Zookeeper):
-- `spring.kafka.consumer.properties.session.timeout.ms=45000`
-- `spring.kafka.consumer.properties.heartbeat.interval.ms=3000`
-- `spring.kafka.consumer.properties.max.poll.interval.ms=300000`
-- `spring.kafka.consumer.properties.request.timeout.ms=40000`
-
-#### Настройки отправки на email:
+#### Настройки отправки на email (только для тестов, для рабочего режима настройки в Config Server):
 - `notification.email.mock=true` - режим мок-отправки email (логирование вместо реальной отправки), false - реальная отправка.
-- `spring.mail.username=${SMTP_USERNAME:}` - адрес SMTP-сервера (только для реальной отправки).
-- `spring.mail.password=${SMTP_PASSWORD:}` - пароль SMTP-сервера (только для реальной отправки).
+- `spring.mail.username=${SMTP_USERNAME:}` - адрес SMTP-сервера (только для реальной отправки - указывается в Config Server).
+- `spring.mail.password=${SMTP_PASSWORD:}` - пароль SMTP-сервера (только для реальной отправки - указывается в Config Server).
 
 ### Режим работы с email:
 Используется, в зависимости от настроек в application.yml (см. выше в основных настройка), мок-отправка email - все письма логируются в консоль вместо реальной отправки или реальная отправка на электронную почту пользователя.
