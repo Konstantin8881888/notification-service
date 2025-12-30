@@ -1,6 +1,5 @@
 package org.klimtsov.config;
 
-import org.klimtsov.handler.GlobalExceptionHandler;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -9,12 +8,7 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 import java.util.Properties;
 
 @TestConfiguration
-public class ControllerTestConfig {
-
-    @Bean
-    public GlobalExceptionHandler globalExceptionHandler() {
-        return new GlobalExceptionHandler();
-    }
+public class TestMailConfig {
 
     @Bean
     public JavaMailSender javaMailSender() {

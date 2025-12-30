@@ -1,0 +1,52 @@
+#Тестовая конфигурация для интеграционных тестов.
+spring:
+  config:
+    activate:
+      on-profile: integration-test
+  cloud:
+    config:
+      enabled: false
+  kafka:
+    bootstrap-servers: ${spring.embedded.kafka.brokers}
+    consumer:
+      group-id: notification-group
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: '*'
+        session.timeout.ms: 45000
+        heartbeat.interval.ms: 3000
+        max.poll.interval.ms: 300000
+        request.timeout.ms: 40000
+        default.api.timeout.ms: 60000
+        metadata.max.age.ms: 30000
+        allow.auto.create.topics: false
+
+  #Настройки почты для тестов.
+  mail:
+    host: localhost
+    port: 25
+    username: test@example.com
+    password: test
+    properties:
+      mail.smtp.auth: false
+      mail.smtp.starttls.enable: false
+    from: test@example.com
+
+#Отключаем Eureka Client в тестах.
+eureka:
+  client:
+    enabled: false
+
+#Кастомные настройки уведомлений для тестов.
+notification:
+  email:
+    enabled: true
+    mock: true
+
+#Swagger/OpenAPI для тестов.
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false

@@ -7,6 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
 import org.klimtsov.dto.UserEvent;
 import org.klimtsov.service.EmailService;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -16,12 +17,13 @@ import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 
 @SpringBootTest(properties = {
-        "spring.kafka.bootstrap-servers=${spring.embedded.kafka.brokers}",
-        "spring.kafka.consumer.group-id=notification-group",
+        "spring.main.allow-bean-definition-overriding=true",
+        "spring.cloud.config.enabled=false",
+        "eureka.client.enabled=false",
         "notification.email.enabled=true",
-        "notification.email.mock=true",
-        "spring.main.allow-bean-definition-overriding=true"
+        "notification.email.mock=true"
 })
+@ActiveProfiles("test") // Используем тестовый профиль
 @Import(TestProducerConfig.class)
 @DirtiesContext
 @EmbeddedKafka(partitions = 1, topics = { "user-events" })

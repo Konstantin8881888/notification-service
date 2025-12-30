@@ -1,0 +1,33 @@
+spring:
+  cloud:
+    config:
+      enabled: false #Отключаем Config Client в тестах.
+
+  #Настройки почты для тестов.
+  mail:
+    host: localhost
+    port: 25
+    username: test@example.com
+    password: test
+    properties:
+      mail.smtp.auth: false
+      mail.smtp.starttls.enable: false
+    from: test@example.com
+
+#Отключаем Eureka Client в тестах.
+eureka:
+  client:
+    enabled: false
+
+#Кастомные настройки уведомлений для тестов.
+notification:
+  email:
+    enabled: true
+    mock: true
+
+#Отключаем Swagger в тестах.
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false
